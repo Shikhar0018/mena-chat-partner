@@ -8,6 +8,7 @@ type AnimatedTransitionProps = {
   className?: string;
   duration?: "fast" | "normal" | "slow";
   animation?: "fade" | "scale" | "slide" | "bounce";
+  style?: React.CSSProperties;
 };
 
 export const AnimatedTransition: React.FC<AnimatedTransitionProps> = ({
@@ -16,6 +17,7 @@ export const AnimatedTransition: React.FC<AnimatedTransitionProps> = ({
   className,
   duration = "normal",
   animation = "fade",
+  style,
 }) => {
   const [render, setRender] = React.useState(show);
 
@@ -52,6 +54,7 @@ export const AnimatedTransition: React.FC<AnimatedTransitionProps> = ({
 
   return (
     <div
+      style={style}
       className={cn(
         "transform",
         animationClasses[animation],

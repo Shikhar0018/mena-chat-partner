@@ -1,13 +1,15 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { MessageType, WELCOME_MESSAGES } from "@/lib/constants";
+import { sendMessageToBackend, getConversationHistory } from "@/lib/api";
 
 export function useChat() {
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
-  // Initialize with welcome message
+  // Initialize with welcome message or fetch history
   useEffect(() => {
     if (messages.length === 0) {
       // Random welcome message from the constants
@@ -23,11 +25,30 @@ export function useChat() {
           },
         ]);
       }, 800);
+      
+      // Try to fetch conversation history in the background
+      fetchConversationHistory();
     }
   }, [messages.length]);
+  
+  // Function to fetch conversation history
+  const fetchConversationHistory = async () => {
+    try {
+      setIsLoadingHistory(true);
+      const history = await getConversationHistory();
+      
+      if (history.length > 0) {
+        setMessages(history);
+      }
+    } catch (error) {
+      console.error("Failed to load conversation history:", error);
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  };
 
   // Function to send a message
-  const sendMessage = useCallback((content: string) => {
+  const sendMessage = useCallback(async (content: string) => {
     if (!content.trim()) return;
 
     // Hide welcome screen when user sends first message
@@ -43,39 +64,40 @@ export function useChat() {
     
     setMessages((prev) => [...prev, userMessage]);
     
-    // Simulate bot typing
+    // Show typing indicator
     setIsTyping(true);
     
-    // Simulate bot response (would connect to a real backend in production)
-    setTimeout(() => {
-      const botResponse: MessageType = {
-        id: Date.now().toString(),
-        content: generateBotResponse(content),
-        sender: "bot",
-        timestamp: new Date(),
-      };
+    try {
+      // Send message to the backend
+      const botResponse = await sendMessageToBackend(content);
       
-      setMessages((prev) => [...prev, botResponse]);
+      // Add bot response
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          content: botResponse,
+          sender: "bot",
+          timestamp: new Date(),
+        },
+      ]);
+    } catch (error) {
+      console.error("Error getting response:", error);
+      
+      // Add error message
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          content: "Sorry, I'm having trouble connecting to my backend. Please try again later.",
+          sender: "bot",
+          timestamp: new Date(),
+        },
+      ]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
-  }, []);
-
-  // Simple mock response generation (replace with actual AI in production)
-  const generateBotResponse = (message: string): string => {
-    message = message.toLowerCase();
-    
-    if (message.includes("hello") || message.includes("hi")) {
-      return "Hello! How can I assist you today?";
-    } else if (message.includes("help") || message.includes("assist")) {
-      return "I can help you find information, answer questions, or connect you with the right resources. What do you need help with?";
-    } else if (message.includes("feature") || message.includes("do")) {
-      return "I can answer questions, provide assistance, and help you navigate our services. Feel free to ask anything!";
-    } else if (message.includes("how") && message.includes("work")) {
-      return "Just type your questions or requests, and I'll do my best to assist you with relevant answers and solutions.";
-    } else {
-      return "I understand you're asking about that. Let me help you with more information or connect you with a human agent if needed.";
     }
-  };
+  }, []);
 
   return {
     messages,
@@ -83,5 +105,7 @@ export function useChat() {
     sendMessage,
     showWelcome,
     setShowWelcome,
+    isLoadingHistory,
+    refreshHistory: fetchConversationHistory,
   };
 }
