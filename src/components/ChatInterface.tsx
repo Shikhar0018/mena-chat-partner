@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from "react";
 import { useChat } from "@/hooks/useChat";
 import ChatHeader from "./ChatHeader";
@@ -121,9 +120,11 @@ const ChatInterface: React.FC = () => {
               </div>
             </TabsContent>
             
-            <TabsContent value="setup" className="flex-1 overflow-auto p-4 pb-24 space-y-6">
-              <ApiKeyInput />
-              <FileUploader onStatusChange={handleFileStatusChange} />
+            <TabsContent value="setup" className="tabs-setup-content scrollbar-thin">
+              <div className="space-y-6">
+                <ApiKeyInput />
+                <FileUploader onStatusChange={handleFileStatusChange} />
+              </div>
             </TabsContent>
           </Tabs>
         </AnimatedTransition>
