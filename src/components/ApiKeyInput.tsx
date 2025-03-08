@@ -69,7 +69,7 @@ const ApiKeyInput: React.FC = () => {
         />
         {saved ? (
           <Button variant="outline" onClick={clearApiKey} size="sm">
-            <X size={16} className="mr-1" /> Clear
+            Clear
           </Button>
         ) : (
           <Button onClick={saveApiKey} size="sm">
