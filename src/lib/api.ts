@@ -4,12 +4,37 @@ import { MessageType } from "./constants";
 // Define the base URL for your Python backend
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+// Function to check if the backend is available
+export async function checkBackendStatus(): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_URL}/ping`, { 
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // Short timeout for quick check
+      signal: AbortSignal.timeout(2000)
+    });
+    return response.ok;
+  } catch (error) {
+    console.log("Backend not available:", error);
+    return false;
+  }
+}
+
 // Function to send a message to the Python backend
 export async function sendMessageToBackend(
   content: string,
   apiKey?: string
 ): Promise<string> {
   try {
+    // If we're in development mode with no backend, return a mock response
+    const backendAvailable = await checkBackendStatus();
+    if (!backendAvailable) {
+      console.log("Using mock response for development");
+      return "This is a mock response as the backend is not available. In production, this would come from your Python backend with LangChain and Google Gemini.";
+    }
+    
     const response = await fetch(`${API_URL}/chat`, {
       method: "POST",
       headers: {
@@ -36,6 +61,13 @@ export async function sendMessageToBackend(
 // Function to get conversation history from the backend
 export async function getConversationHistory(): Promise<MessageType[]> {
   try {
+    // Check if backend is available
+    const backendAvailable = await checkBackendStatus();
+    if (!backendAvailable) {
+      console.log("Using mock history for development");
+      return [];
+    }
+    
     const response = await fetch(`${API_URL}/history`);
     
     if (!response.ok) {
@@ -56,6 +88,15 @@ export async function uploadFile(
   type: "csv" | "privacy" | "terms"
 ): Promise<boolean> {
   try {
+    // Check if backend is available
+    const backendAvailable = await checkBackendStatus();
+    if (!backendAvailable) {
+      console.log(`Mock file upload for ${type} in development mode`);
+      // Simulate successful upload in development
+      localStorage.setItem(`file_${type}`, file.name);
+      return true;
+    }
+    
     const formData = new FormData();
     formData.append("file", file);
     formData.append("type", type);
@@ -80,6 +121,14 @@ export async function uploadFile(
 // Function to set CSV URL
 export async function setCSVUrl(url: string): Promise<boolean> {
   try {
+    // Check if backend is available
+    const backendAvailable = await checkBackendStatus();
+    if (!backendAvailable) {
+      console.log("Mock CSV URL setting in development mode");
+      localStorage.setItem("csv_url", url);
+      return true;
+    }
+    
     const response = await fetch(`${API_URL}/set-csv-url`, {
       method: "POST",
       headers: {
@@ -107,6 +156,18 @@ export async function checkFilesStatus(): Promise<{
   terms: boolean;
 }> {
   try {
+    // Check if backend is available
+    const backendAvailable = await checkBackendStatus();
+    if (!backendAvailable) {
+      console.log("Using mock file status for development");
+      // Check localStorage for mock uploads in development
+      return {
+        csv: !!localStorage.getItem("csv_url") || !!localStorage.getItem("file_csv"),
+        privacy: !!localStorage.getItem("file_privacy"),
+        terms: !!localStorage.getItem("file_terms"),
+      };
+    }
+    
     const response = await fetch(`${API_URL}/files-status`);
     
     if (!response.ok) {
@@ -121,10 +182,11 @@ export async function checkFilesStatus(): Promise<{
     };
   } catch (error) {
     console.error("Error checking files status:", error);
+    // Return mock data in case of error
     return {
-      csv: false,
-      privacy: false,
-      terms: false,
+      csv: !!localStorage.getItem("csv_url") || !!localStorage.getItem("file_csv"),
+      privacy: !!localStorage.getItem("file_privacy"),
+      terms: !!localStorage.getItem("file_terms"),
     };
   }
 }

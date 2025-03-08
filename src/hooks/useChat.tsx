@@ -1,7 +1,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { MessageType, WELCOME_MESSAGES, FileStatus } from "@/lib/constants";
-import { sendMessageToBackend, getConversationHistory, checkFilesStatus } from "@/lib/api";
+import { sendMessageToBackend, getConversationHistory, checkFilesStatus, checkBackendStatus } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 
 export function useChat() {
@@ -16,6 +16,26 @@ export function useChat() {
     terms: false,
   });
   const [apiKeySaved, setApiKeySaved] = useState(false);
+  const [backendAvailable, setBackendAvailable] = useState<boolean | null>(null);
+
+  // Check backend status
+  useEffect(() => {
+    const checkBackend = async () => {
+      const isAvailable = await checkBackendStatus();
+      setBackendAvailable(isAvailable);
+      
+      if (!isAvailable) {
+        console.log("Backend not available, using development mode");
+        // Show toast only once when determined backend is unavailable
+        toast({
+          title: "Development Mode",
+          description: "Backend not detected. Running in development mode with mock data.",
+        });
+      }
+    };
+    
+    checkBackend();
+  }, [toast]);
 
   // Initialize with welcome message or fetch history
   useEffect(() => {
@@ -81,26 +101,29 @@ export function useChat() {
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim()) return;
 
-    // Check if all required files are uploaded
-    const allFilesUploaded = fileStatus.csv && fileStatus.privacy && fileStatus.terms;
-    if (!allFilesUploaded) {
-      toast({
-        variant: "destructive",
-        title: "Missing required files",
-        description: "Please upload all required files before chatting.",
-      });
-      return;
-    }
+    // Skip validation in development mode if backend is unavailable
+    if (backendAvailable !== false) {
+      // Check if all required files are uploaded
+      const allFilesUploaded = fileStatus.csv && fileStatus.privacy && fileStatus.terms;
+      if (!allFilesUploaded) {
+        toast({
+          variant: "destructive",
+          title: "Missing required files",
+          description: "Please upload all required files before chatting.",
+        });
+        return;
+      }
 
-    // Check if API key is saved
-    const apiKey = localStorage.getItem("gemini_api_key");
-    if (!apiKey) {
-      toast({
-        variant: "destructive",
-        title: "API key required",
-        description: "Please save your Google Gemini API key first.",
-      });
-      return;
+      // Check if API key is saved
+      const apiKey = localStorage.getItem("gemini_api_key");
+      if (!apiKey) {
+        toast({
+          variant: "destructive",
+          title: "API key required",
+          description: "Please save your Google Gemini API key first.",
+        });
+        return;
+      }
     }
 
     // Hide welcome screen when user sends first message
@@ -121,6 +144,7 @@ export function useChat() {
     
     try {
       // Send message to the backend
+      const apiKey = localStorage.getItem("gemini_api_key") || "";
       const botResponse = await sendMessageToBackend(content, apiKey);
       
       // Add bot response
@@ -149,7 +173,7 @@ export function useChat() {
     } finally {
       setIsTyping(false);
     }
-  }, [fileStatus, toast]);
+  }, [fileStatus, toast, backendAvailable]);
 
   return {
     messages,
@@ -163,5 +187,6 @@ export function useChat() {
     updateFileStatus,
     apiKeySaved,
     checkRequiredFiles,
+    backendAvailable,
   };
 }
