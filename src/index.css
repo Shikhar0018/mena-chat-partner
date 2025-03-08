@@ -94,6 +94,14 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+
+  html, body, #root {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
 }
 
 @layer components {
@@ -114,7 +122,8 @@
   }
   
   .chatbot-container {
-    @apply max-w-md mx-auto h-[100dvh] flex flex-col overflow-hidden relative bg-background;
+    @apply w-full max-w-md mx-auto h-[100dvh] flex flex-col overflow-hidden relative bg-background;
+    max-height: 100vh;
   }
   
   .message-list {

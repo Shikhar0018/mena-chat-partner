@@ -121,7 +121,7 @@ const ChatInterface: React.FC = () => {
               </div>
             </TabsContent>
             
-            <TabsContent value="setup" className="flex-1 overflow-auto p-4 space-y-6">
+            <TabsContent value="setup" className="flex-1 overflow-auto p-4 pb-24 space-y-6">
               <ApiKeyInput />
               <FileUploader onStatusChange={handleFileStatusChange} />
             </TabsContent>
