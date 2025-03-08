@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useState } from "react";
 import { useChat } from "@/hooks/useChat";
 import ChatHeader from "./ChatHeader";
@@ -87,7 +88,7 @@ const ChatInterface: React.FC = () => {
             </TabsList>
             
             <TabsContent value="chat" className="flex-1 flex flex-col">
-              <div className="message-list">
+              <div className="message-list scrollbar-thin">
                 {!setupComplete && messages.length <= 1 && (
                   <div className="p-4 bg-amber-50 text-amber-800 rounded-lg m-4 text-sm">
                     <p className="font-medium">Setup required</p>
