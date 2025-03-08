@@ -1,13 +1,21 @@
 
 import { useState, useCallback, useEffect } from "react";
-import { MessageType, WELCOME_MESSAGES } from "@/lib/constants";
-import { sendMessageToBackend, getConversationHistory } from "@/lib/api";
+import { MessageType, WELCOME_MESSAGES, FileStatus } from "@/lib/constants";
+import { sendMessageToBackend, getConversationHistory, checkFilesStatus } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 export function useChat() {
+  const { toast } = useToast();
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const [fileStatus, setFileStatus] = useState<FileStatus>({
+    csv: false,
+    privacy: false,
+    terms: false,
+  });
+  const [apiKeySaved, setApiKeySaved] = useState(false);
 
   // Initialize with welcome message or fetch history
   useEffect(() => {
@@ -28,8 +36,25 @@ export function useChat() {
       
       // Try to fetch conversation history in the background
       fetchConversationHistory();
+      
+      // Check if API key is saved
+      const savedKey = localStorage.getItem("gemini_api_key");
+      setApiKeySaved(!!savedKey);
+
+      // Check file status
+      checkRequiredFiles();
     }
   }, [messages.length]);
+  
+  // Function to check required files
+  const checkRequiredFiles = async () => {
+    try {
+      const status = await checkFilesStatus();
+      setFileStatus(status);
+    } catch (error) {
+      console.error("Failed to check file status:", error);
+    }
+  };
   
   // Function to fetch conversation history
   const fetchConversationHistory = async () => {
@@ -47,9 +72,36 @@ export function useChat() {
     }
   };
 
+  // Function to update file status
+  const updateFileStatus = useCallback((status: FileStatus) => {
+    setFileStatus(status);
+  }, []);
+
   // Function to send a message
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim()) return;
+
+    // Check if all required files are uploaded
+    const allFilesUploaded = fileStatus.csv && fileStatus.privacy && fileStatus.terms;
+    if (!allFilesUploaded) {
+      toast({
+        variant: "destructive",
+        title: "Missing required files",
+        description: "Please upload all required files before chatting.",
+      });
+      return;
+    }
+
+    // Check if API key is saved
+    const apiKey = localStorage.getItem("gemini_api_key");
+    if (!apiKey) {
+      toast({
+        variant: "destructive",
+        title: "API key required",
+        description: "Please save your Google Gemini API key first.",
+      });
+      return;
+    }
 
     // Hide welcome screen when user sends first message
     setShowWelcome(false);
@@ -69,7 +121,7 @@ export function useChat() {
     
     try {
       // Send message to the backend
-      const botResponse = await sendMessageToBackend(content);
+      const botResponse = await sendMessageToBackend(content, apiKey);
       
       // Add bot response
       setMessages((prev) => [
@@ -97,7 +149,7 @@ export function useChat() {
     } finally {
       setIsTyping(false);
     }
-  }, []);
+  }, [fileStatus, toast]);
 
   return {
     messages,
@@ -107,5 +159,9 @@ export function useChat() {
     setShowWelcome,
     isLoadingHistory,
     refreshHistory: fetchConversationHistory,
+    fileStatus,
+    updateFileStatus,
+    apiKeySaved,
+    checkRequiredFiles,
   };
 }

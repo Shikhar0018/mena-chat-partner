@@ -1,21 +1,21 @@
 
-export const BOT_NAME = "Assistant";
+export const BOT_NAME = "Smartphone Assistant";
 export const BOT_AVATAR = "https://api.dicebear.com/7.x/bottts/svg?seed=Zoey";
 export const USER_AVATAR = "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix";
 
 export const QUICK_REPLIES = [
-  "What can you help me with?",
-  "Find restaurants nearby",
-  "Order food",
-  "Track my order",
-  "Help with payment issues",
-  "Contact support"
+  "What smartphones do you have?",
+  "Tell me about your privacy policy",
+  "What are your terms and conditions?",
+  "Compare phones in my price range",
+  "What's your return policy?",
+  "How do I contact support?"
 ];
 
 export const WELCOME_MESSAGES = [
-  "Hello! How can I assist you today?",
-  "Hi there! I'm your virtual assistant. What can I help you with?",
-  "Welcome! I'm here to make your experience better. How can I help?"
+  "Hello! I'm your smartphone assistant. How can I help you today?",
+  "Hi there! I can help you find the perfect smartphone. What are you looking for?",
+  "Welcome! I'm here to answer questions about our smartphones, privacy policy, and terms. How can I assist you?"
 ];
 
 export type MessageType = {
@@ -26,3 +26,9 @@ export type MessageType = {
 };
 
 export type QuickReplyType = string;
+
+export type FileStatus = {
+  csv: boolean;
+  privacy: boolean;
+  terms: boolean;
+};
