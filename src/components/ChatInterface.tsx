@@ -92,7 +92,7 @@ const ChatInterface: React.FC = () => {
                   </div>
                 )}
                 
-                {messages.map((message, index) => (
+                {messages.map((message) => (
                   <MessageBubble 
                     key={message.id} 
                     message={message} 

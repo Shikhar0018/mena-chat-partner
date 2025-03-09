@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { AlertCircle, CheckCircle, Key } from "lucide-react";
 import { Console } from "console";
+import { saveApiKey, clearApiKey } from "@/lib/api";
 
 const ApiKeyInput: React.FC = () => {
   const { toast } = useToast();
   const [apiKey, setApiKey] = useState("");
   const [saved, setSaved] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   
   // Check if API key already exists in localStorage
   useEffect(() => {
@@ -20,14 +22,34 @@ const ApiKeyInput: React.FC = () => {
     }
   }, []);
   
-  const saveApiKey = () => {
+  const handleSaveApiKey = async () => {
     if (apiKey.trim()) {
-      localStorage.setItem("gemini_api_key", apiKey.trim());
-      setSaved(true);
-      toast({
-        title: "API Key Saved",
-        description: "Your Google Gemini API key has been saved.",
-      });
+      setIsLoading(true);
+      try {
+        const success = await saveApiKey(apiKey.trim());
+        if (success) {
+          setSaved(true);
+          toast({
+            title: "API Key Saved",
+            description: "Your Google Gemini API key has been saved.",
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Failed to Save API Key",
+            description: "There was an error saving your API key.",
+          });
+        }
+      } catch (error) {
+        console.error("Error saving API key:", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "An unexpected error occurred while saving your API key.",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     } else {
       toast({
         variant: "destructive",
@@ -39,14 +61,34 @@ const ApiKeyInput: React.FC = () => {
 
 
   
-  const clearApiKey = () => {
-    localStorage.removeItem("gemini_api_key");
-    setApiKey("");
-    setSaved(false);
-    toast({
-      title: "API Key Removed",
-      description: "Your Google Gemini API key has been removed.",
-    });
+  const handleClearApiKey = async () => {
+    setIsLoading(true);
+    try {
+      const success = await clearApiKey();
+      if (success) {
+        setApiKey("");
+        setSaved(false);
+        toast({
+          title: "API Key Removed",
+          description: "Your Google Gemini API key has been removed.",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Failed to Remove API Key",
+          description: "There was an error removing your API key.",
+        });
+      }
+    } catch (error) {
+      console.error("Error clearing API key:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "An unexpected error occurred while removing your API key.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   return (
@@ -69,13 +111,14 @@ const ApiKeyInput: React.FC = () => {
           }}
           placeholder="Enter your Google Gemini API key"
           className="flex-1"
+          disabled={isLoading}
         />
         {saved ? (
-          <Button variant="outline" onClick={clearApiKey} size="sm">
+          <Button variant="outline" onClick={handleClearApiKey} size="sm" disabled={isLoading}>
             Clear
           </Button>
         ) : (
-          <Button onClick = {saveApiKey} size="sm">
+          <Button onClick={handleSaveApiKey} size="sm" disabled={isLoading}>
             Save
           </Button>
         )}
