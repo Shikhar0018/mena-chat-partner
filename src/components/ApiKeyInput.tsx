@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { AlertCircle, CheckCircle, Key } from "lucide-react";
+import { Console } from "console";
 
 const ApiKeyInput: React.FC = () => {
   const { toast } = useToast();
@@ -35,6 +36,8 @@ const ApiKeyInput: React.FC = () => {
       });
     }
   };
+
+
   
   const clearApiKey = () => {
     localStorage.removeItem("gemini_api_key");
@@ -72,7 +75,7 @@ const ApiKeyInput: React.FC = () => {
             Clear
           </Button>
         ) : (
-          <Button onClick={saveApiKey} size="sm">
+          <Button onClick = {saveApiKey} size="sm">
             Save
           </Button>
         )}

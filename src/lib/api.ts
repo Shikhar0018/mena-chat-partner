@@ -2,12 +2,16 @@
 import { MessageType } from "./constants";
 
 // Define the base URL for your Python backend
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
+
+const jsonHeaders = {
+  "Content-Type": "application/json",
+};
 
 // Function to check if the backend is available
 export async function checkBackendStatus(): Promise<boolean> {
   try {
-    const response = await fetch(`${API_URL}/ping`, { 
+    const response = await fetch(`${API_URL}/health`, { 
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -37,15 +41,9 @@ export async function sendMessageToBackend(
     
     const response = await fetch(`${API_URL}/chat`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ 
-        message: content,
-        api_key: apiKey || localStorage.getItem("gemini_api_key") || ""
-      }),
+      headers: jsonHeaders,
+      body: JSON.stringify({ message: content }),
     });
-
     if (!response.ok) {
       throw new Error(`Server responded with status: ${response.status}`);
     }

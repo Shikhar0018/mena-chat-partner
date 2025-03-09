@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from "react";
 import { useChat } from "@/hooks/useChat";
 import ChatHeader from "./ChatHeader";
@@ -26,14 +25,12 @@ const ChatInterface: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("chat");
   const [setupComplete, setSetupComplete] = useState<boolean>(false);
 
-  // Auto-scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, isTyping]);
 
-  // Check if setup is complete
   useEffect(() => {
     const isComplete = 
       fileStatus.csv && 
@@ -43,7 +40,6 @@ const ChatInterface: React.FC = () => {
     
     setSetupComplete(isComplete);
     
-    // Automatically switch to chat tab when setup is complete
     if (isComplete && activeTab === "setup") {
       setActiveTab("chat");
     }
@@ -74,23 +70,23 @@ const ChatInterface: React.FC = () => {
   };
 
   return (
-    <div className="chatbot-container">
+    <div className="chatbot-container h-screen flex flex-col">
       {showWelcome ? (
         <WelcomeScreen onStartChat={handleStartChat} />
       ) : (
         <AnimatedTransition show={true} animation="fade" className="h-full flex flex-col">
           <ChatHeader />
           
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
             <TabsList className="grid grid-cols-2 mx-4 mt-2">
               <TabsTrigger value="chat">Chat</TabsTrigger>
               <TabsTrigger value="setup">Setup</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="chat" className="flex-1 flex flex-col">
-              <div className="message-list scrollbar-thin">
+            <TabsContent value="chat" className="flex-1 flex flex-col overflow-hidden">
+              <div className="message-list scrollbar-thin flex-1 overflow-y-auto p-4">
                 {!setupComplete && messages.length <= 1 && (
-                  <div className="p-4 bg-amber-50 text-amber-800 rounded-lg m-4 text-sm">
+                  <div className="p-4 bg-amber-50 text-amber-800 rounded-lg mb-4 text-sm">
                     <p className="font-medium">Setup required</p>
                     <p>Please go to the Setup tab to upload required files and save your API key.</p>
                   </div>
@@ -105,7 +101,6 @@ const ChatInterface: React.FC = () => {
                 ))}
                 
                 {isTyping && <TypingIndicator />}
-                
                 <div ref={messagesEndRef} />
               </div>
               
@@ -113,7 +108,7 @@ const ChatInterface: React.FC = () => {
                 <QuickReply onSelect={handleQuickReplySelect} />
               )}
               
-              <div className="message-input-container">
+              <div className="message-input-container px-4 pb-4">
                 <ChatInput 
                   onSendMessage={handleSendMessage} 
                   disabled={!setupComplete}
@@ -121,8 +116,8 @@ const ChatInterface: React.FC = () => {
               </div>
             </TabsContent>
             
-            <TabsContent value="setup" className="tabs-setup-content scrollbar-thin">
-              <div className="space-y-6">
+            <TabsContent value="setup" className="flex-1 overflow-y-auto">
+              <div className="space-y-6 p-4">
                 <ApiKeyInput />
                 <FileUploader onStatusChange={handleFileStatusChange} />
               </div>
