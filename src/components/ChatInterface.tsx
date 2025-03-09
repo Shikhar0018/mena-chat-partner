@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useState } from "react";
 import { useChat } from "@/hooks/useChat";
 import ChatHeader from "./ChatHeader";
@@ -10,6 +11,8 @@ import FileUploader from "./FileUploader";
 import ApiKeyInput from "./ApiKeyInput";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileStatus } from "@/lib/constants";
+import { Button } from "@/components/ui/button";
+import { Settings } from "lucide-react";
 
 const ChatInterface: React.FC = () => {
   const { 
@@ -69,13 +72,28 @@ const ChatInterface: React.FC = () => {
     updateFileStatus(status);
   };
 
+  const navigateToSetup = () => {
+    setActiveTab("setup");
+  };
+
   return (
     <div className="chatbot-container h-screen flex flex-col">
       {showWelcome ? (
         <WelcomeScreen onStartChat={handleStartChat} />
       ) : (
         <AnimatedTransition show={true} animation="fade" className="h-full flex flex-col">
-          <ChatHeader />
+          <div className="flex items-center justify-between p-4 border-b">
+            <ChatHeader />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={navigateToSetup}
+              title="Go to Setup"
+              aria-label="Go to Setup"
+            >
+              <Settings className="h-5 w-5" />
+            </Button>
+          </div>
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
             <TabsList className="grid grid-cols-2 mx-4 mt-2">
@@ -116,8 +134,8 @@ const ChatInterface: React.FC = () => {
               </div>
             </TabsContent>
             
-            <TabsContent value="setup" className="flex-1 overflow-y-auto">
-              <div className="space-y-6 p-4">
+            <TabsContent value="setup" className="tabs-setup-content flex-1 overflow-y-auto p-4">
+              <div className="space-y-6">
                 <ApiKeyInput />
                 <FileUploader onStatusChange={handleFileStatusChange} />
               </div>
