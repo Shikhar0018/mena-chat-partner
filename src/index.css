@@ -127,7 +127,8 @@
   }
   
   .message-list {
-    @apply flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin;
+    @apply flex-1 overflow-y-auto p-4 space-y-4;
+    max-height: calc(100vh - 190px);
   }
   
   .message-input-container {
@@ -136,8 +137,9 @@
 
   /* Add proper scrolling for tabs content */
   .tabs-setup-content {
-    @apply flex-1 overflow-y-auto py-4 px-4 pb-32;
+    @apply flex-1 overflow-y-auto py-4 px-4;
     max-height: calc(100vh - 120px);
+    padding-bottom: 100px;
   }
   
   .scrollbar-thin::-webkit-scrollbar {

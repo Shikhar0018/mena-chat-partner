@@ -87,7 +87,7 @@ const ChatInterface: React.FC = () => {
               <TabsTrigger value="setup">Setup</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="chat" className="flex-1 flex flex-col">
+            <TabsContent value="chat" className="flex-1 flex flex-col overflow-hidden">
               <div className="message-list scrollbar-thin">
                 {!setupComplete && messages.length <= 1 && (
                   <div className="p-4 bg-amber-50 text-amber-800 rounded-lg m-4 text-sm">
@@ -96,7 +96,7 @@ const ChatInterface: React.FC = () => {
                   </div>
                 )}
                 
-                {messages.map((message, index) => (
+                {messages.map((message) => (
                   <MessageBubble 
                     key={message.id} 
                     message={message} 
@@ -121,8 +121,11 @@ const ChatInterface: React.FC = () => {
               </div>
             </TabsContent>
             
-            <TabsContent value="setup" className="tabs-setup-content scrollbar-thin">
-              <div className="space-y-6">
+            <TabsContent 
+              value="setup" 
+              className="tabs-setup-content scrollbar-thin"
+            >
+              <div className="space-y-6 pb-16">
                 <ApiKeyInput />
                 <FileUploader onStatusChange={handleFileStatusChange} />
               </div>

@@ -2,12 +2,12 @@
 import { MessageType } from "./constants";
 
 // Define the base URL for your Python backend
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
 
 // Function to check if the backend is available
 export async function checkBackendStatus(): Promise<boolean> {
   try {
-    const response = await fetch(`${API_URL}/ping`, { 
+    const response = await fetch(`${API_URL}/health`, { 
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -75,7 +75,33 @@ export async function getConversationHistory(): Promise<MessageType[]> {
     }
     
     const data = await response.json();
-    return data.history || [];
+    
+    // Convert backend history format to our MessageType format
+    if (data.history && Array.isArray(data.history)) {
+      const messages: MessageType[] = [];
+      for (const item of data.history) {
+        if (typeof item === 'string') {
+          if (item.startsWith('User: ')) {
+            messages.push({
+              id: Date.now().toString() + Math.random(),
+              content: item.substring(6),
+              sender: "user",
+              timestamp: new Date(),
+            });
+          } else if (item.startsWith('Bot: ')) {
+            messages.push({
+              id: Date.now().toString() + Math.random(),
+              content: item.substring(5),
+              sender: "bot",
+              timestamp: new Date(),
+            });
+          }
+        }
+      }
+      return messages;
+    }
+    
+    return [];
   } catch (error) {
     console.error("Error fetching conversation history:", error);
     return [];
@@ -145,6 +171,67 @@ export async function setCSVUrl(url: string): Promise<boolean> {
     return data.success || false;
   } catch (error) {
     console.error("Error setting CSV URL:", error);
+    return false;
+  }
+}
+
+// Function to save API key
+export async function saveApiKey(apiKey: string): Promise<boolean> {
+  try {
+    // Check if backend is available
+    const backendAvailable = await checkBackendStatus();
+    if (!backendAvailable) {
+      console.log("Mock API key saving in development mode");
+      localStorage.setItem("gemini_api_key", apiKey);
+      return true;
+    }
+    
+    const response = await fetch(`${API_URL}/api-key`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ api_key: apiKey }),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Server responded with status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data.success || false;
+  } catch (error) {
+    console.error("Error saving API key:", error);
+    return false;
+  }
+}
+
+// Function to clear API key
+export async function clearApiKey(): Promise<boolean> {
+  try {
+    // Check if backend is available
+    const backendAvailable = await checkBackendStatus();
+    if (!backendAvailable) {
+      console.log("Mock API key clearing in development mode");
+      localStorage.removeItem("gemini_api_key");
+      return true;
+    }
+    
+    const response = await fetch(`${API_URL}/clear-api-key`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Server responded with status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data.success || false;
+  } catch (error) {
+    console.error("Error clearing API key:", error);
     return false;
   }
 }
