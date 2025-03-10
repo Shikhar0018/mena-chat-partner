@@ -1,5 +1,6 @@
 
 import React, { useRef, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useChat } from "@/hooks/useChat";
 import ChatHeader from "./ChatHeader";
 import MessageBubble, { TypingIndicator } from "./MessageBubble";
@@ -7,14 +8,12 @@ import ChatInput from "./ChatInput";
 import QuickReply from "./QuickReply";
 import WelcomeScreen from "./WelcomeScreen";
 import AnimatedTransition from "./AnimatedTransition";
-import FileUploader from "./FileUploader";
-import ApiKeyInput from "./ApiKeyInput";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileStatus } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
 
 const ChatInterface: React.FC = () => {
+  const navigate = useNavigate();
   const { 
     messages, 
     isTyping, 
@@ -25,7 +24,6 @@ const ChatInterface: React.FC = () => {
     updateFileStatus,
   } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [activeTab, setActiveTab] = useState<string>("chat");
   const [setupComplete, setSetupComplete] = useState<boolean>(false);
 
   useEffect(() => {
@@ -46,7 +44,7 @@ const ChatInterface: React.FC = () => {
 
   const handleSendMessage = (content: string) => {
     if (!setupComplete) {
-      setActiveTab("setup");
+      navigate('/setup');
       return;
     }
     sendMessage(content);
@@ -54,7 +52,7 @@ const ChatInterface: React.FC = () => {
 
   const handleQuickReplySelect = (reply: string) => {
     if (!setupComplete) {
-      setActiveTab("setup");
+      navigate('/setup');
       return;
     }
     sendMessage(reply);
@@ -64,16 +62,8 @@ const ChatInterface: React.FC = () => {
     setShowWelcome(false);
   };
 
-  const handleFileStatusChange = (status: FileStatus) => {
-    updateFileStatus(status);
-  };
-
   const navigateToSetup = () => {
-    setActiveTab("setup");
-  };
-
-  const navigateToChat = () => {
-    setActiveTab("chat");
+    navigate('/setup');
   };
 
   return (
@@ -95,61 +85,36 @@ const ChatInterface: React.FC = () => {
             </Button>
           </div>
           
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-            <TabsList className="grid grid-cols-2 mx-4 mt-2">
-              <TabsTrigger value="chat">Chat</TabsTrigger>
-              <TabsTrigger value="setup">Setup</TabsTrigger>
-            </TabsList>
+          <div className="message-list scrollbar-thin flex-1 overflow-y-auto p-4">
+            {!setupComplete && messages.length <= 1 && (
+              <div className="p-4 bg-amber-50 text-amber-800 rounded-lg mb-4 text-sm">
+                <p className="font-medium">Setup required</p>
+                <p>Please go to the Setup page to upload required files and save your API key.</p>
+              </div>
+            )}
             
-            <TabsContent value="chat" className="flex-1 flex flex-col overflow-hidden">
-              <div className="message-list scrollbar-thin flex-1 overflow-y-auto p-4">
-                {!setupComplete && messages.length <= 1 && (
-                  <div className="p-4 bg-amber-50 text-amber-800 rounded-lg mb-4 text-sm">
-                    <p className="font-medium">Setup required</p>
-                    <p>Please go to the Setup tab to upload required files and save your API key.</p>
-                  </div>
-                )}
-                
-                {messages.map((message) => (
-                  <MessageBubble 
-                    key={message.id} 
-                    message={message} 
-                    showAvatar 
-                  />
-                ))}
-                
-                {isTyping && <TypingIndicator />}
-                <div ref={messagesEndRef} />
-              </div>
-              
-              {messages.length > 0 && !isTyping && (
-                <QuickReply onSelect={handleQuickReplySelect} />
-              )}
-              
-              <div className="message-input-container px-4 pb-4">
-                <ChatInput 
-                  onSendMessage={handleSendMessage} 
-                  disabled={!setupComplete}
-                />
-              </div>
-            </TabsContent>
+            {messages.map((message) => (
+              <MessageBubble 
+                key={message.id} 
+                message={message} 
+                showAvatar 
+              />
+            ))}
             
-            <TabsContent value="setup" className="flex-1 overflow-y-auto p-4 pb-20">
-              <div className="space-y-6 max-w-md mx-auto">
-                <ApiKeyInput onSaveComplete={navigateToChat} />
-                
-                <FileUploader onStatusChange={handleFileStatusChange} />
-                
-                {setupComplete && (
-                  <div className="flex justify-center pt-4 pb-8">
-                    <Button onClick={navigateToChat} size="lg">
-                      Return to Chat
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-          </Tabs>
+            {isTyping && <TypingIndicator />}
+            <div ref={messagesEndRef} />
+          </div>
+          
+          {messages.length > 0 && !isTyping && (
+            <QuickReply onSelect={handleQuickReplySelect} />
+          )}
+          
+          <div className="message-input-container px-4 pb-4">
+            <ChatInput 
+              onSendMessage={handleSendMessage} 
+              disabled={!setupComplete}
+            />
+          </div>
         </AnimatedTransition>
       )}
     </div>
