@@ -1,5 +1,4 @@
-
-import { MessageType } from "./constants";
+import { MessageType, FileStatus } from "./constants";
 
 // Define the base URL for your Python backend
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
@@ -8,8 +7,17 @@ const jsonHeaders = {
   "Content-Type": "application/json",
 };
 
-// Function to check if the backend is available
+// Cache backend status
+let cachedBackendStatus: { isAvailable: boolean; lastChecked: number } | null = null;
+const CACHE_DURATION_MS = 30000; // 30 seconds
+
+// Function to check if the backend is available (with caching)
 export async function checkBackendStatus(): Promise<boolean> {
+  // Return cached status if it's still valid
+  if (cachedBackendStatus && (Date.now() - cachedBackendStatus.lastChecked < CACHE_DURATION_MS)) {
+    return cachedBackendStatus.isAvailable;
+  }
+  
   try {
     const response = await fetch(`${API_URL}/health`, { 
       method: "GET",
@@ -19,9 +27,25 @@ export async function checkBackendStatus(): Promise<boolean> {
       // Short timeout for quick check
       signal: AbortSignal.timeout(2000)
     });
-    return response.ok;
+    
+    const isAvailable = response.ok;
+    
+    // Cache the result
+    cachedBackendStatus = {
+      isAvailable,
+      lastChecked: Date.now()
+    };
+    
+    return isAvailable;
   } catch (error) {
     console.log("Backend not available:", error);
+    
+    // Cache the negative result
+    cachedBackendStatus = {
+      isAvailable: false,
+      lastChecked: Date.now()
+    };
+    
     return false;
   }
 }

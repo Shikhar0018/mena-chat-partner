@@ -43,10 +43,9 @@ const ChatInterface: React.FC = () => {
     
     setSetupComplete(isComplete);
     
-    if (isComplete && activeTab === "setup") {
-      setActiveTab("chat");
-    }
-  }, [fileStatus, activeTab]);
+    // If setup is complete, we DON'T automatically navigate away
+    // This allows users to stay on the setup page if they want
+  }, [fileStatus]);
 
   const handleSendMessage = (content: string) => {
     if (!setupComplete) {
@@ -74,6 +73,10 @@ const ChatInterface: React.FC = () => {
 
   const navigateToSetup = () => {
     setActiveTab("setup");
+  };
+
+  const navigateToChat = () => {
+    setActiveTab("chat");
   };
 
   return (
@@ -136,8 +139,16 @@ const ChatInterface: React.FC = () => {
             
             <TabsContent value="setup" className="tabs-setup-content flex-1 overflow-y-auto p-4">
               <div className="space-y-6">
-                <ApiKeyInput />
+                <ApiKeyInput onSaveComplete={navigateToChat} />
                 <FileUploader onStatusChange={handleFileStatusChange} />
+                
+                {setupComplete && (
+                  <div className="flex justify-center pt-4">
+                    <Button onClick={navigateToChat}>
+                      Return to Chat
+                    </Button>
+                  </div>
+                )}
               </div>
             </TabsContent>
           </Tabs>

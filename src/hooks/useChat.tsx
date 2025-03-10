@@ -17,25 +17,29 @@ export function useChat() {
   });
   const [apiKeySaved, setApiKeySaved] = useState(false);
   const [backendAvailable, setBackendAvailable] = useState<boolean | null>(null);
+  const [backendChecked, setBackendChecked] = useState(false);
 
-  // Check backend status
+  // Check backend status only once during component initialization
   useEffect(() => {
-    const checkBackend = async () => {
-      const isAvailable = await checkBackendStatus();
-      setBackendAvailable(isAvailable);
+    if (!backendChecked) {
+      const checkBackend = async () => {
+        const isAvailable = await checkBackendStatus();
+        setBackendAvailable(isAvailable);
+        setBackendChecked(true);
+        
+        if (!isAvailable) {
+          console.log("Backend not available, using development mode");
+          // Show toast only once when determined backend is unavailable
+          toast({
+            title: "Development Mode",
+            description: "Backend not detected. Running in development mode with mock data.",
+          });
+        }
+      };
       
-      if (!isAvailable) {
-        console.log("Backend not available, using development mode");
-        // Show toast only once when determined backend is unavailable
-        toast({
-          title: "Development Mode",
-          description: "Backend not detected. Running in development mode with mock data.",
-        });
-      }
-    };
-    
-    checkBackend();
-  }, [toast]);
+      checkBackend();
+    }
+  }, [toast, backendChecked]);
 
   // Initialize with welcome message or fetch history
   useEffect(() => {

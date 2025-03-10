@@ -4,10 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { AlertCircle, CheckCircle, Key } from "lucide-react";
-import { Console } from "console";
 import { saveApiKey, clearApiKey } from "@/lib/api";
 
-const ApiKeyInput: React.FC = () => {
+interface ApiKeyInputProps {
+  onSaveComplete?: () => void;
+}
+
+const ApiKeyInput: React.FC<ApiKeyInputProps> = ({ onSaveComplete }) => {
   const { toast } = useToast();
   const [apiKey, setApiKey] = useState("");
   const [saved, setSaved] = useState(false);
@@ -33,6 +36,11 @@ const ApiKeyInput: React.FC = () => {
             title: "API Key Saved",
             description: "Your Google Gemini API key has been saved.",
           });
+          
+          // Call the onSaveComplete callback if provided
+          if (onSaveComplete) {
+            onSaveComplete();
+          }
         } else {
           toast({
             variant: "destructive",
