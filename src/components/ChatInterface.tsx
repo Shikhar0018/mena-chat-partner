@@ -42,9 +42,6 @@ const ChatInterface: React.FC = () => {
       localStorage.getItem("gemini_api_key") !== null;
     
     setSetupComplete(isComplete);
-    
-    // If setup is complete, we DON'T automatically navigate away
-    // This allows users to stay on the setup page if they want
   }, [fileStatus]);
 
   const handleSendMessage = (content: string) => {
@@ -137,14 +134,15 @@ const ChatInterface: React.FC = () => {
               </div>
             </TabsContent>
             
-            <TabsContent value="setup" className="tabs-setup-content flex-1 overflow-y-auto p-4">
-              <div className="space-y-6">
+            <TabsContent value="setup" className="flex-1 overflow-y-auto p-4 pb-20">
+              <div className="space-y-6 max-w-md mx-auto">
                 <ApiKeyInput onSaveComplete={navigateToChat} />
+                
                 <FileUploader onStatusChange={handleFileStatusChange} />
                 
                 {setupComplete && (
-                  <div className="flex justify-center pt-4">
-                    <Button onClick={navigateToChat}>
+                  <div className="flex justify-center pt-4 pb-8">
+                    <Button onClick={navigateToChat} size="lg">
                       Return to Chat
                     </Button>
                   </div>

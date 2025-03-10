@@ -66,8 +66,6 @@ const ApiKeyInput: React.FC<ApiKeyInputProps> = ({ onSaveComplete }) => {
       });
     }
   };
-
-
   
   const handleClearApiKey = async () => {
     setIsLoading(true);
@@ -100,9 +98,9 @@ const ApiKeyInput: React.FC<ApiKeyInputProps> = ({ onSaveComplete }) => {
   };
   
   return (
-    <div className="space-y-2 w-full">
+    <div className="space-y-4 w-full bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
       <div className="flex items-center gap-2">
-        <Key size={16} />
+        <Key size={16} className="text-primary" />
         <label htmlFor="api-key" className="text-sm font-medium">
           Google Gemini API Key
         </label>
@@ -141,6 +139,10 @@ const ApiKeyInput: React.FC<ApiKeyInputProps> = ({ onSaveComplete }) => {
           <AlertCircle size={12} className="mr-1" /> API key not saved
         </div>
       )}
+      
+      <div className="text-xs text-muted-foreground mt-2">
+        Get your API key from the <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-primary underline">Google AI Studio</a>
+      </div>
     </div>
   );
 };

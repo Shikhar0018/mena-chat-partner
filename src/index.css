@@ -135,7 +135,7 @@
     @apply p-4 border-t border-border;
   }
 
-  /* Add proper scrolling for tabs content */
+  /* Improved scrolling for tabs content */
   .tabs-setup-content {
     @apply flex-1 overflow-y-auto py-4 px-4;
     max-height: calc(100vh - 120px);

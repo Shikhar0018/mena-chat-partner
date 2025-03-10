@@ -118,22 +118,22 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onStatusChange }) => {
   };
   
   return (
-    <Card className="w-full">
-      <CardHeader>
+    <Card className="w-full shadow-sm">
+      <CardHeader className="pb-3">
         <CardTitle>Upload Required Files</CardTitle>
         <CardDescription>
           Please upload or provide URLs for all required files to use the chatbot
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
+      <CardContent className="space-y-6">
+        <div className="space-y-3">
           <div className="flex items-center justify-between">
             <label htmlFor="csv-url" className="text-sm font-medium">
               CSV Data (URL or File)
             </label>
             {fileStatus.csv && (
-              <span className="text-green-500 flex items-center">
-                <CheckCircle size={16} className="mr-1" /> Uploaded
+              <span className="text-green-500 flex items-center text-xs">
+                <CheckCircle size={14} className="mr-1" /> Uploaded
               </span>
             )}
           </div>
@@ -156,7 +156,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onStatusChange }) => {
             </Button>
           </div>
           
-          <div className="text-center text-sm text-muted-foreground my-1">- OR -</div>
+          <div className="text-center text-xs text-muted-foreground my-1">- OR -</div>
           
           <div className="relative">
             <input
@@ -164,7 +164,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onStatusChange }) => {
               id="csv-file"
               accept=".csv"
               onChange={e => handleFileUpload(e, "csv")}
-              className="absolute inset-0 opacity-0 cursor-pointer"
+              className="absolute inset-0 opacity-0 cursor-pointer z-10"
             />
             <div
               className={cn(
@@ -172,22 +172,22 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onStatusChange }) => {
                 "hover:bg-muted/50 transition-colors"
               )}
             >
-              <Upload className="mx-auto h-6 w-6 text-muted-foreground" />
-              <div className="mt-2 text-sm text-muted-foreground">
+              <Upload className="mx-auto h-5 w-5 text-muted-foreground" />
+              <div className="mt-2 text-xs text-muted-foreground">
                 Click to upload CSV file
               </div>
             </div>
           </div>
         </div>
         
-        <div className="space-y-2">
+        <div className="space-y-3">
           <div className="flex items-center justify-between">
             <label htmlFor="privacy-file" className="text-sm font-medium">
               Privacy Policy (PDF or TXT)
             </label>
             {fileStatus.privacy && (
-              <span className="text-green-500 flex items-center">
-                <CheckCircle size={16} className="mr-1" /> Uploaded
+              <span className="text-green-500 flex items-center text-xs">
+                <CheckCircle size={14} className="mr-1" /> Uploaded
               </span>
             )}
           </div>
@@ -198,7 +198,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onStatusChange }) => {
               id="privacy-file"
               accept=".txt,.pdf"
               onChange={e => handleFileUpload(e, "privacy")}
-              className="absolute inset-0 opacity-0 cursor-pointer"
+              className="absolute inset-0 opacity-0 cursor-pointer z-10"
             />
             <div
               className={cn(
@@ -206,22 +206,22 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onStatusChange }) => {
                 "hover:bg-muted/50 transition-colors"
               )}
             >
-              <FileType className="mx-auto h-6 w-6 text-muted-foreground" />
-              <div className="mt-2 text-sm text-muted-foreground">
+              <FileType className="mx-auto h-5 w-5 text-muted-foreground" />
+              <div className="mt-2 text-xs text-muted-foreground">
                 Click to upload Privacy Policy
               </div>
             </div>
           </div>
         </div>
         
-        <div className="space-y-2">
+        <div className="space-y-3">
           <div className="flex items-center justify-between">
             <label htmlFor="terms-file" className="text-sm font-medium">
               Terms & Conditions (PDF or TXT)
             </label>
             {fileStatus.terms && (
-              <span className="text-green-500 flex items-center">
-                <CheckCircle size={16} className="mr-1" /> Uploaded
+              <span className="text-green-500 flex items-center text-xs">
+                <CheckCircle size={14} className="mr-1" /> Uploaded
               </span>
             )}
           </div>
@@ -232,7 +232,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onStatusChange }) => {
               id="terms-file"
               accept=".txt,.pdf"
               onChange={e => handleFileUpload(e, "terms")}
-              className="absolute inset-0 opacity-0 cursor-pointer"
+              className="absolute inset-0 opacity-0 cursor-pointer z-10"
             />
             <div
               className={cn(
@@ -240,23 +240,23 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onStatusChange }) => {
                 "hover:bg-muted/50 transition-colors"
               )}
             >
-              <FileType className="mx-auto h-6 w-6 text-muted-foreground" />
-              <div className="mt-2 text-sm text-muted-foreground">
+              <FileType className="mx-auto h-5 w-5 text-muted-foreground" />
+              <div className="mt-2 text-xs text-muted-foreground">
                 Click to upload Terms & Conditions
               </div>
             </div>
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
+      <CardFooter className="flex justify-between pt-2">
         <div className="flex items-center text-sm">
           {Object.values(fileStatus).every(Boolean) ? (
-            <span className="text-green-500 flex items-center">
-              <CheckCircle size={16} className="mr-1" /> All files uploaded
+            <span className="text-green-500 flex items-center text-xs">
+              <CheckCircle size={14} className="mr-1" /> All files uploaded
             </span>
           ) : (
-            <span className="text-amber-500 flex items-center">
-              <AlertCircle size={16} className="mr-1" /> Missing required files
+            <span className="text-amber-500 flex items-center text-xs">
+              <AlertCircle size={14} className="mr-1" /> Missing required files
             </span>
           )}
         </div>
