@@ -45,8 +45,8 @@ const Setup: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/50 flex flex-col">
-      <header className="border-b bg-white/50 backdrop-blur-sm py-4 px-6 flex items-center">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-secondary/50">
+      <header className="border-b bg-white/50 backdrop-blur-sm py-4 px-6 flex items-center sticky top-0 z-10">
         <Button 
           variant="ghost" 
           size="sm" 
@@ -60,8 +60,8 @@ const Setup: React.FC = () => {
         <div className="w-24"></div>
       </header>
       
-      <div className="flex-1 container max-w-2xl mx-auto py-8 px-4 sm:px-6">
-        <div className="space-y-8">
+      <div className="flex-1 container max-w-2xl mx-auto py-8 px-4 sm:px-6 overflow-y-auto">
+        <div className="space-y-8 pb-16">
           <div className="space-y-4">
             <h2 className="text-lg font-medium">1. API Key Configuration</h2>
             <ApiKeyInput disableAutoNavigation={true} />
