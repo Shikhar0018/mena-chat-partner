@@ -8,7 +8,6 @@ import ChatInput from "./ChatInput";
 import QuickReply from "./QuickReply";
 import WelcomeScreen from "./WelcomeScreen";
 import AnimatedTransition from "./AnimatedTransition";
-import { FileStatus } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
 
@@ -90,6 +89,14 @@ const ChatInterface: React.FC = () => {
               <div className="p-4 bg-amber-50 text-amber-800 rounded-lg mb-4 text-sm">
                 <p className="font-medium">Setup required</p>
                 <p>Please go to the Setup page to upload required files and save your API key.</p>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={navigateToSetup} 
+                  className="mt-2"
+                >
+                  Go to Setup
+                </Button>
               </div>
             )}
             
