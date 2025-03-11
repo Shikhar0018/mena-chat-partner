@@ -1,69 +1,95 @@
-# Welcome to your Lovable project
+```markdown
+# Business Chatbot Project
 
-## Project info
+## Project Overview
 
-**URL**: https://lovable.dev/projects/98dbcebe-97d2-4c12-b4db-5df31b405778
+This project is a business-oriented chatbot designed to answer queries based solely on a curated context. Users provide a CSV file containing product data along with a privacy policy and terms & conditions document (in PDF or TXT format). The chatbot processes these documents, builds a searchable context using document embeddings, and generates answers to queries related to the products, privacy policy, and terms & conditions. If a query falls outside these topics, the chatbot politely declines to answer.
 
-## How can I edit this code?
+## Technologies Used
 
-There are several ways of editing your application.
+- **Flask**: A lightweight Python web framework for building the backend API.
+- **Streamlit**: For creating an interactive web interface.
+- **LangChain**: For managing language model chains and custom prompt templates.
+- **FAISS**: For building and querying a vector store of document embeddings.
+- **HuggingFace Embeddings**: Provides free text embeddings using the "sentence-transformers/all-MiniLM-L6-v2" model.
+- **PyPDF2**: For extracting text from PDF files.
+- **Pandas**: For processing CSV data.
+- **Other Libraries**: Requests, CSV, io, uuid, etc.
 
-**Use Lovable**
+## How to Run the Project
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/98dbcebe-97d2-4c12-b4db-5df31b405778) and start prompting.
+Follow these steps to set up and run the project locally:
 
-Changes made via Lovable will be committed automatically to this repo.
+1. **Clone the Repository:**
 
-**Use your preferred IDE**
+   ```sh
+   git clone <YOUR_GIT_URL>
+   ```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+2. **Navigate to the Project Directory:**
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+   ```sh
+   cd <YOUR_PROJECT_NAME>
+   ```
 
-Follow these steps:
+3. **Install Dependencies:**
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+   Ensure you have Python 3.8 or higher installed. Then, install the required libraries:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+   ```sh
+   pip install Flask flask-cors pandas requests PyPDF2 langchain faiss-cpu sentence-transformers streamlit
+   ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+   Alternatively, if a `requirements.txt` file is provided, run:
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+   ```sh
+   pip install -r requirements.txt
+   ```
 
-**Edit a file directly in GitHub**
+4. **Run the Application:**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+   Start the Flask app by executing:
 
-**Use GitHub Codespaces**
+   ```sh
+   python app.py
+   ```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+   The app will run on port 9000 by default. You can test the API endpoints using a tool like Postman or via your browser.
 
-## What technologies are used for this project?
+## Project Functionality
 
-This project is built with .
+- **File Input:**
+  - **CSV Data:** Users can either upload a CSV file containing product information or provide a URL to fetch the CSV data.
+  - **Privacy Policy & Terms:** Users upload the privacy policy and terms & conditions documents (in PDF or TXT format). The project supports multiple languages, including Arabic.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Document Processing:**
+  - Uploaded files are processed into LangChain `Document` objects.
+  - The documents are then split into manageable chunks and indexed into a FAISS vector store using HuggingFace embeddings.
 
-## How can I deploy this project?
+- **Chatbot Integration:**
+  - A custom prompt template restricts the chatbot’s responses to the provided context. If a query falls outside the provided topics, the chatbot responds with a polite refusal.
+  - The chatbot maintains context by keeping a history of the last five interactions, which is included in the prompt to enhance response relevance.
+  - The Google Gemini API (wrapped within the project) is used to generate responses based on the context.
 
-Simply open [Lovable](https://lovable.dev/projects/98dbcebe-97d2-4c12-b4db-5df31b405778) and click on Share -> Publish.
+## How to Edit the Code
 
-## I want to use a custom domain - is that possible?
+You can edit the project using your preferred IDE:
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+- **Clone the Repository:**  
+  Clone the repository to your local machine.
+  
+- **Make Changes:**  
+  Open the project in your IDE, modify the code as needed, and test locally.
+  
+- **Deploy Changes:**  
+  Once satisfied, push your changes back to the repository. If you're deploying to a production server or cloud platform, follow your standard deployment process.
+
+## Contributing
+
+Contributions are welcome! Please feel free to open issues or submit pull requests for improvements or bug fixes.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
