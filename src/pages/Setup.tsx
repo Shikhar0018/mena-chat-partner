@@ -44,8 +44,8 @@ const Setup: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center w-full h-full min-h-screen bg-gradient-to-b from-background to-secondary/50">
-      <div className="w-full max-w-md mx-auto h-[100dvh] flex flex-col overflow-auto py-6 px-4">
+    <div className="flex-1 min-h-0 container max-w-2xl mx-auto py-8 px-4 sm:px-6 overflow-y-auto">
+  <div className="space-y-8 pb-16">
         <h1 className="text-2xl font-bold text-center mb-6">AI Chat Setup</h1>
         
         <div className="space-y-6 max-w-md mx-auto">
