@@ -8,9 +8,13 @@ import { saveApiKey, clearApiKey } from "@/lib/api";
 
 interface ApiKeyInputProps {
   onSaveComplete?: () => void;
+  disableAutoNavigation?: boolean;
 }
 
-const ApiKeyInput: React.FC<ApiKeyInputProps> = ({ onSaveComplete }) => {
+const ApiKeyInput: React.FC<ApiKeyInputProps> = ({ 
+  onSaveComplete,
+  disableAutoNavigation = false
+}) => {
   const { toast } = useToast();
   const [apiKey, setApiKey] = useState("");
   const [saved, setSaved] = useState(false);
@@ -37,8 +41,8 @@ const ApiKeyInput: React.FC<ApiKeyInputProps> = ({ onSaveComplete }) => {
             description: "Your Google Gemini API key has been saved.",
           });
           
-          // Call the onSaveComplete callback if provided
-          if (onSaveComplete) {
+          // Call the onSaveComplete callback if provided and not disabled
+          if (onSaveComplete && !disableAutoNavigation) {
             onSaveComplete();
           }
         } else {
